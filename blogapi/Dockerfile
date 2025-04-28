@@ -1,26 +1,29 @@
-# Use an official OpenJDK runtime as a parent image (Java 21)
+# Use official OpenJDK 21 slim image
 FROM openjdk:21-jdk-slim
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
-
-# Copy the pom.xml and download dependencies first to leverage Docker caching
-COPY blogapi/pom.xml .
 
 # Install Maven
 RUN apt-get update && apt-get install -y maven
 
-# Run Maven to download the dependencies
-RUN mvn clean install -DskipTests
+# Copy Maven files first
+COPY blogapi/pom.xml .
 
-# Copy the entire source code of the project
+# Download Maven dependencies
+RUN mvn dependency:go-offline
+
+# Copy full source code
 COPY blogapi/src ./src
 
-# Build the application (this should include your Spring Boot jar)
-RUN mvn package -DskipTests
+# Package the application (skip tests to speed up)
+RUN mvn clean package -DskipTests
 
-# Expose the port the app runs on
+# Move final jar to a simple name app.jar
+RUN cp target/*.jar app.jar
+
+# Expose application port
 EXPOSE 8080
 
-# Run the jar file
-CMD ["java", "-jar", "target/blogapi-0.0.1-SNAPSHOT.jar"]
+# Run the app
+CMD ["java", "-jar", "app.jar"]
