@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Blog</title>
+</head>
+<body>
+  <h1>Create Blog</h1>
+  <form id="blogForm" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Title" required><br>
+    <input type="text" name="slug" placeholder="Slug" required><br>
+    <input type="text" name="blogCategory" placeholder="Category" required><br>
+    <textarea name="description" placeholder="Description" required></textarea><br>
+    <input type="text" name="metaTitle" placeholder="Meta Title"><br>
+    <input type="text" name="metaDescription" placeholder="Meta Description"><br>
+    <input type="text" name="metaKeywords" placeholder="Meta Keywords"><br>
+    <textarea name="paragraph" placeholder="Paragraph" required></textarea><br>
+    <input type="text" name="tags" placeholder="Tags"><br>
+    <input type="file" name="image" accept="image/*"><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    document.getElementById("blogForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+
+      try {
+        const response = await fetch("http://localhost:9500/api/blogs", {
+          method: "POST",
+          body: formData
+        });
+
+        if (response.ok) {
+          alert("Blog posted successfully!");
+          // Optional: Redirect after success
+          // window.location.href = '/'; // Redirect to homepage or blog list
+        } else {
+          alert("Something went wrong! Status: " + response.status);
+          const errorData = await response.json();
+          console.error("Error Details:", errorData);
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Network error occurred. Please try again later.");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Blogs</title>
+  <style>
+    .blog-card {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 5px;
+      max-width: 600px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>All Blogs</h1>
+  <div id="blogList"></div>
+
+  <script>
+    async function fetchBlogs() {
+      try {
+        const res = await fetch("http://localhost:9500/api/blogs");
+        const blogs = await res.json();
+
+        const blogList = document.getElementById("blogList");
+        blogList.innerHTML = "";
+
+        blogs.forEach(blog => {
+          const blogDiv = document.createElement("div");
+          blogDiv.className = "blog-card";
+          blogDiv.innerHTML = `
+            <h2>${blog.title}</h2>
+            <p><strong>Category:</strong> ${blog.blogCategory}</p>
+            <p><strong>Slug:</strong> ${blog.slug}</p>
+            <p><strong>Description:</strong> ${blog.description}</p>
+            <p><strong>Paragraph:</strong> ${blog.paragraph}</p>
+            <p><strong>Tags:</strong> ${blog.tags}</p>
+            <p><strong>Meta Title:</strong> ${blog.metaTitle}</p>
+            <p><strong>Meta Description:</strong> ${blog.metaDescription}</p>
+            <p><strong>Meta Keywords:</strong> ${blog.metaKeywords}</p>
+            ${blog.image ? `<img src="data:image/jpeg;base64,${blog.image}" alt="Blog Image">` : ''}
+          `;
+          blogList.appendChild(blogDiv);
+        });
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+      }
+    }
+
+    fetchBlogs();
+  </script>
+</body>
+</html>
